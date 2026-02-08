@@ -128,7 +128,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="rotors.cpp" />
     <ClCompile Include="xifratge i desxifratge.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rotors.h" />
+    <ClInclude Include="xifratge i desxifratge.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
