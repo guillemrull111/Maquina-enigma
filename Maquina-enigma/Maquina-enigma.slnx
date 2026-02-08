@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Maquina-enigma/Maquina-enigma.vcxproj" />
+  <Project Path="Maquina-enigma/Maquina-enigma.vcxproj" Id="ad1b78f4-9cb1-426b-b6ba-468bbceb90eb" />
 </Solution>
