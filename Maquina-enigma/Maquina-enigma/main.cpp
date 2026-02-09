@@ -1,4 +1,6 @@
 #include <iostream>
+#include "rotors.h"
+#include "xifratge i desxifratge.h"
 
 int main() {
 
@@ -15,17 +17,17 @@ int main() {
 
 	if (InputUsuario == 1) // Xifrar missatge
 	{
-
+		xifratge();
 	}
 
 	else if (InputUsuario == 2) // Desxifrar missatge
 	{
-
+		desxifratge();
 	}
 
 	else if (InputUsuario == 3) // Editar rotors
 	{
-
+		editarRotors();
 	}
 
 	else if (InputUsuario == 4) // Sortir
