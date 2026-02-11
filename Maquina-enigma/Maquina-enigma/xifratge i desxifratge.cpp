@@ -1,145 +1,130 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "rotors.h"
 #include "xifratge i desxifratge.h"
+#include "rotors.h"
 
 void xifratge() {
 
-    if (!cargarRotors()) {
+    std::string rotorEsquerra, rotorCentral, rotorDret;
+    char notchEsquerra, notchCentral, notchDret;
+
+    std::ifstream fitxerRotorEsquerra("Rotor1.txt");
+    std::ifstream fitxerRotorCentral("Rotor2.txt");
+    std::ifstream fitxerRotorDret("Rotor3.txt");
+
+    if (!fitxerRotorEsquerra.is_open() || !fitxerRotorCentral.is_open() || !fitxerRotorDret.is_open()) {
+        std::cout << "No es poden obrir els rotors\n";
         return;
     }
 
-    char a, b, c;
-    std::cout << "Introdueix finestra (3 lletres, ex: A C B): ";
-    std::cin >> a >> b >> c;
-    setVentana(a, b, c);
+    fitxerRotorEsquerra >> rotorEsquerra;
+    fitxerRotorEsquerra >> notchEsquerra;
 
-    std::cin.ignore(10000, '\n');
-    std::cout << "Introdueix el missatge (acaba amb línia buida):\n";
+    fitxerRotorCentral >> rotorCentral;
+    fitxerRotorCentral >> notchCentral;
 
-    std::ofstream fitxerMissatge("Missatge.txt");
-    if (!fitxerMissatge) {
-        std::cout << "[ERROR] No s'ha pogut escriure Missatge.txt\n";
-        return;
-    }
+    fitxerRotorDret >> rotorDret;
+    fitxerRotorDret >> notchDret;
 
-    std::string total;
-    std::string linia;
+    char inicialEsquerra, inicialCentral, inicialDreta;
+    std::cout << "Posicio inicial (A B C): ";
+    std::cin >> inicialEsquerra >> inicialCentral >> inicialDreta;
 
-    while (true) {
-        std::getline(std::cin, linia);
-        if (linia.size() == 0) {
-            break;
+    int posicioEsquerra = inicialEsquerra - 'A';
+    int posicioCentral = inicialCentral - 'A';
+    int posicioDreta = inicialDreta - 'A';
+
+    std::ifstream entrada("Missatge.txt");
+    std::ofstream sortida("Xifrat.txt");
+
+    char lletraActual;
+    int contador = 0;
+
+    while (entrada >> lletraActual) {
+
+        if (lletraActual >= 'a' && lletraActual <= 'z')
+            lletraActual -= 32;
+
+        if (lletraActual < 'A' || lletraActual > 'Z')
+            continue;
+
+        movimentRotors(posicioEsquerra, posicioCentral, posicioDreta, notchEsquerra, notchCentral);
+
+        lletraActual = rotorEsquerra[(lletraActual - 'A' + posicioEsquerra) % 26];
+
+        lletraActual = rotorCentral[(lletraActual - 'A' + posicioCentral) % 26];
+
+        lletraActual = rotorDret[(lletraActual - 'A' + posicioDreta) % 26];
+
+        sortida << lletraActual;
+        contador++;
+
+        if (contador == 5) {
+            sortida << ' ';
+            contador = 0;
         }
-        fitxerMissatge << linia << '\n';
-        total = total + linia + '\n';
     }
 
-    fitxerMissatge.close();
-
-    std::string pla;
-    int i = 0;
-    while (i < (int)total.size()) {
-        char ch = total[i];
-        if (ch >= 'a' && ch <= 'z') {
-            ch = ch - 'a' + 'A';
-        }
-        if (ch >= 'A' && ch <= 'Z') {
-            pla = pla + ch;
-        }
-        i = i + 1;
-    }
-
-    std::string xifrat;
-    i = 0;
-    while (i < (int)pla.size()) {
-        char enc = pasarForward(pla[i]);
-        xifrat = xifrat + enc;
-        i = i + 1;
-    }
-
-    std::string grups;
-    int comptador = 0;
-    i = 0;
-    while (i < (int)xifrat.size()) {
-        if (comptador == 5) {
-            grups = grups + ' ';
-            comptador = 0;
-        }
-        grups = grups + xifrat[i];
-        comptador = comptador + 1;
-        i = i + 1;
-    }
-
-    std::ofstream fitxerXifrat("Xifrat.txt");
-    if (!fitxerXifrat) {
-        std::cout << "[ERROR] No s'ha pogut escriure Xifrat.txt\n";
-        return;
-    }
-
-    fitxerXifrat << grups;
-    fitxerXifrat.close();
-
-    int grups5 = ((int)xifrat.size() + 4) / 5;
-    std::cout << "[OK] Missatge xifrat a \"Xifrat.txt\" ("
-        << xifrat.size() << " lletres, " << grups5 << " grups de 5)\n";
+    std::cout << "Missatge xifrat\n";
 }
 
 void desxifratge() {
 
-    if (!cargarRotors()) {
+    std::string rotorEsquerra, rotorCentral, rotorDret;
+    char notchEsquerra, notchCentral, notchDret;
+
+    std::ifstream fitxerRotorEsquerra("Rotor1.txt");
+    std::ifstream fitxerRotorCentral("Rotor2.txt");
+    std::ifstream fitxerRotorDret("Rotor3.txt");
+
+    if (!fitxerRotorEsquerra.is_open() || !fitxerRotorCentral.is_open() || !fitxerRotorDret.is_open()) {
+        std::cout << "No es poden obrir els rotors\n";
         return;
     }
 
-    char a, b, c;
-    std::cout << "Introdueix finestra (3 lletres, ex: A C B): ";
-    std::cin >> a >> b >> c;
-    setVentana(a, b, c);
+    fitxerRotorEsquerra >> rotorEsquerra; 
+    fitxerRotorEsquerra >> notchEsquerra;
 
-    std::ifstream fitxerXifrat("Xifrat.txt");
-    if (!fitxerXifrat) {
-        std::cout << "[ERROR] No s'ha trobat Xifrat.txt\n";
-        return;
+    fitxerRotorCentral >> rotorCentral;
+    fitxerRotorCentral >> notchCentral;
+
+    fitxerRotorDret >> rotorDret;
+    fitxerRotorDret >> notchDret;
+
+    char inicialEsquerra, inicialCentral, inicialDreta;
+    std::cout << "Posicio inicial (A B C): ";
+    std::cin >> inicialEsquerra >> inicialCentral >> inicialDreta;
+
+    int posicioEsquerra = inicialEsquerra - 'A';
+    int posicioCentral = inicialCentral - 'A';
+    int posicioDreta = inicialDreta - 'A';
+
+    std::ifstream entrada("Xifrat.txt");
+    std::ofstream sortida("Desxifrat.txt");
+
+    char lletraActual;
+
+    while (entrada >> lletraActual) {
+
+        if (lletraActual < 'A' || lletraActual > 'Z')
+            continue;
+
+        movimentRotors(posicioEsquerra, posicioCentral, posicioDreta, notchEsquerra, notchCentral);
+
+        int posicioFinal;
+
+        posicioFinal = rotorDret.find(lletraActual);
+        lletraActual = 'A' + (posicioFinal - posicioDreta + 26) % 26;
+
+        posicioFinal = rotorCentral.find(lletraActual);
+        lletraActual = 'A' + (posicioFinal - posicioCentral + 26) % 26;
+
+        posicioFinal = rotorEsquerra.find(lletraActual);
+        lletraActual = 'A' + (posicioFinal - posicioEsquerra + 26) % 26;
+
+        sortida << lletraActual;
     }
 
-    std::string total;
-    std::string linia;
-    while (std::getline(fitxerXifrat, linia)) {
-        total = total + linia;
-    }
-    fitxerXifrat.close();
-
-    std::string xifratNet;
-    int i = 0;
-    while (i < (int)total.size()) {
-        char ch = total[i];
-        if (ch >= 'a' && ch <= 'z') {
-            ch = ch - 'a' + 'A';
-        }
-        if (ch >= 'A' && ch <= 'Z') {
-            xifratNet = xifratNet + ch;
-        }
-        i = i + 1;
-    }
-
-    std::string pla;
-    i = 0;
-    while (i < (int)xifratNet.size()) {
-        char dec = pasarBackward(xifratNet[i]);
-        pla = pla + dec;
-        i = i + 1;
-    }
-
-    std::ofstream fitxerDesxifrat("desxifrat.txt");
-    if (!fitxerDesxifrat) {
-        std::cout << "[ERROR] No s'ha pogut escriure desxifrat.txt\n";
-        return;
-    }
-
-    fitxerDesxifrat << pla;
-    fitxerDesxifrat.close();
-
-    std::cout << "[OK] Missatge desxifrat a \"desxifrat.txt\" ("
-        << pla.size() << " lletres)\n";
+    std::cout << "[OK] Missatge desxifrat\n";
 }

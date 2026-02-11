@@ -2,4 +2,3 @@
 
 void xifratge();
 void desxifratge();
-void editarRotors();
