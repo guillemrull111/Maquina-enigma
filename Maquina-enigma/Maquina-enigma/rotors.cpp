@@ -2,15 +2,28 @@
 #include <fstream>
 #include "rotors.h"
 
+// Aquesta funció simula el moviment dels rotors com a la màquina Enigma
+
 void movimentRotors(int& posicioEsquerra, int& posicioCentral, int& posicioDreta, char notchEsquerra, char notchCentral)
 {
+    // Comprovem si el rotor esquerre arriba al seu notch (punt de gir)
+
     bool giraCentral = (posicioEsquerra == notchEsquerra - 'A');
+
+    // Comprovem si el rotor central arriba al seu notch
+
     bool giraDreta = (posicioCentral == notchCentral - 'A');
+
+    // Girem sempre el rotor esquerre (cada lletra escrita)
 
     posicioEsquerra = (posicioEsquerra + 1) % 26;
 
+    // Si el rotor esquerre ha arribat al seu notch, fem girar el central
+
     if (giraCentral) {
         posicioCentral = (posicioCentral + 1) % 26;
+
+        // I si el central també està al seu notch, fem girar el dret
 
         if (giraDreta) {
             posicioDreta = (posicioDreta + 1) % 26;
@@ -20,19 +33,17 @@ void movimentRotors(int& posicioEsquerra, int& posicioCentral, int& posicioDreta
 
 void editarRotors() {
 
-
-
     int numeroRotor;
+
+    // Demanem quin rotor vol editar l’usuari
 
     std::cout << "Quin rotor vols editar? (1, 2 o 3): ";
 
     std::cin >> numeroRotor;
 
-
-
     std::string nomFitxer;
 
-
+    // Assignem el nom del fitxer segons el número seleccionat
 
     if (numeroRotor == 1)
 
@@ -54,17 +65,15 @@ void editarRotors() {
 
     }
 
-
-
     std::string permutacio;
+
+    // L’usuari introdueix una nova seqüència de 26 lletres (la configuració del rotor)
 
     std::cout << "Introdueix la nova permutacio (26 lletres majuscules): ";
 
     std::cin >> permutacio;
 
-
-
-    // ---- COMPROBACIÓN 1: longitud ----
+    // ---- COMPROBACIÓ 1: longitud ----
 
     if (permutacio.length() != 26) {
 
@@ -74,9 +83,7 @@ void editarRotors() {
 
     }
 
-
-
-    // ---- COMPROBACIÓN 2: solo A-Z ----
+    // ---- COMPROBACIÓ 2: nomes A-Z ----
 
     for (int i = 0; i < 26; i++) {
 
@@ -87,12 +94,9 @@ void editarRotors() {
             return;
 
         }
-
     }
 
-
-
-    // ---- COMPROBACIÓN 3: no repetidas ----
+    // ---- COMPROBACIÓ 3: no repetidas ----
 
     for (int i = 0; i < 26; i++) {
 
@@ -105,22 +109,18 @@ void editarRotors() {
                 return;
 
             }
-
         }
-
     }
 
-
-
     char notch;
+
+    // L’usuari escriu la lletra del notch (on el rotor farà girar el següent)
 
     std::cout << "Introdueix la lletra del notch (A-Z): ";
 
     std::cin >> notch;
 
-
-
-    // ---- COMPROBACIÓN 4: notch válido ----
+    // ---- COMPROBACIÓ 4: notch vàlid ----
 
     if (notch < 'A' || notch > 'Z') {
 
@@ -130,11 +130,9 @@ void editarRotors() {
 
     }
 
-
+    // Obrim el fitxer corresponent per escriure-hi la nova configuració
 
     std::ofstream fitxer(nomFitxer);
-
-
 
     if (!fitxer.is_open()) {
 
@@ -144,13 +142,11 @@ void editarRotors() {
 
     }
 
-
+    // Guardem la nova permutació i el notch al fitxer
 
     fitxer << permutacio << std::endl;
 
     fitxer << notch << std::endl;
-
-
 
     std::cout << "Rotor actualitzat correctament!\n";
 
